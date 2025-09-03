@@ -1,0 +1,69 @@
+# NHC -- Advanced Micro Devices' NIC Checks
+#
+# Joseph Tippit <joseph.tippit@amd.com>
+# 21 Aug 2025
+#
+
+function check_rdma_hw() {
+    local IFS=':'
+    local DEVICE
+    local PORT
+
+    read -r DEVICE PORT <<< "$1"
+    unset IFS
+
+    local -a PHYS_STATE
+    local -a STATE
+
+    local -a DEV_RATE
+    local DEV_MTU
+    local DEV_FW
+
+    # Verify the device exists, and is Active/LinkUp
+    if [[ ! -d /sys/class/infiniband/${DEVICE} ]]; then
+        die 1 "No RDMA device ${DEVICE}"
+        return 1
+    elif [[ ! -d /sys/class/infiniband/${DEVICE}/ports/${PORT} ]]; then
+        die 1 "RDMA device ${DEVICE} has no port ${PORT}"
+        return 1
+    fi
+
+
+    read -a PHYS_STATE < /sys/class/infiniband/${DEVICE}/ports/${PORT}/phys_state
+    read -a STATE < /sys/class/infiniband/${DEVICE}/ports/${PORT}/state
+
+    if [[ ${PHYS_STATE[1]} != "LinkUp" || ${STATE[1]} != "ACTIVE" ]]; then
+        die 1 "Port ${PORT} on ${DEVICE} down."
+        return 1
+    fi
+
+    # Check the Rate is as defined
+    if [[ -n $2 ]]; then
+        read -a DEV_RATE < /sys/class/infiniband/${DEVICE}/ports/${PORT}/rate
+        if [[ ${DEV_RATE[0]} != "$2" ]]; then
+            die 1 "$1 rate not $2"
+            return 1
+        fi
+    fi
+
+    # Check the MTU is as defined
+    if [[ -n $3 ]]; then
+        read DEV_MTU < /sys/class/infiniband/${DEVICE}/device/net/*/mtu
+        if [[ "$DEV_MTU" != "$3" ]]; then
+            die 1 "$1 mtu not $3"
+            return 1
+        fi
+    fi
+
+    # Check the Firmware is as defined
+    if [[ -n $4 ]]; then
+        read DEV_FW < /sys/class/infiniband/${DEVICE}/fw_ver
+        if [[ "$DEV_FW" != "$4" ]]; then
+            die 1 "$1 firmware invalid"
+            return 1
+        fi
+    fi
+
+    # Otherwise, all checks passed.
+    return 0
+}

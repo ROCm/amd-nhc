@@ -1,0 +1,26 @@
+# NHC -- Advanced Micro Devices' Data Center GPU Checks
+#
+# Joseph Tippit <joseph.tippit@amd.com>
+# 20 Aug 2025
+#
+
+function check_gpu_count() {
+    count=0
+    for i in /sys/bus/pci/drivers/amdgpu/000*; do
+        count=$((count++));
+    done
+    if [[ $count -ne $1 ]]; then
+        die 1 "Invalid number of AMD GPUs present."
+        return 1;
+    fi
+    return 0;
+}
+
+function check_amd_version() {
+    read AMDVER < /sys/bus/pci/drivers/amdgpu/module/version
+    if [[ $AMDVER -ne $1 ]]; then
+        die 1 "Wrong AMD GPU driver version installed"
+        return 1;
+    fi
+    return 0;
+}
