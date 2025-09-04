@@ -2,7 +2,7 @@
 
 ## Introduction
 
-AMD's NHC Scripts are add on health checks for the widely utilitzed [Node Health Check (NHC)](https://github.com/mej/nhc) framework.  These specialized scripts enhance monitoring capablities by adding AMD-specific checks focusing on AI/ML and HPC clusters. Key focuses of this repository are RDMA networking and GPU health checks.
+AMD's NHC Scripts are add-on health checks for the widely utilized [Node Health Check (NHC)](https://github.com/mej/nhc) framework.  These specialized scripts enhance monitoring capablities by adding AMD-specific checks focusing on AI/ML and HPC clusters. Key focuses of this repository are RDMA networking and GPU health checks.
 
 ## Installation
 
