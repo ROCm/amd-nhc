@@ -1,14 +1,16 @@
 # NHC -- Advanced Micro Devices' Data Center GPU Checks
 #
 # Joseph Tippit <joseph.tippit@amd.com>
-# 20 Aug 2025
+# 11 Sept 2025
 #
 
 function check_gpu_count() {
     count=0
+    set +f
     for i in /sys/bus/pci/drivers/amdgpu/000*; do
-        count=$((count++));
+        count=$((count+1));
     done
+    set -f
     if [[ $count -ne $1 ]]; then
         die 1 "Invalid number of AMD GPUs present."
         return 1;
