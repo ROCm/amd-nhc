@@ -20,7 +20,7 @@ function check_gpu_count() {
 
 function check_amd_version() {
     read AMDVER < /sys/bus/pci/drivers/amdgpu/module/version
-    if [[ $AMDVER -ne $1 ]]; then
+    if [[ "${AMDVER}" != "$1" ]]; then
         die 1 "Wrong AMD GPU driver version installed"
         return 1;
     fi
