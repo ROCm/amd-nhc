@@ -21,10 +21,10 @@ function check_rdma_hw() {
 
     # Verify the device exists, and is Active/LinkUp
     if [[ ! -d /sys/class/infiniband/${DEVICE} ]]; then
-        die 1 "No RDMA device ${DEVICE}"
+        die 1 "${FUNCNAME}:  No RDMA device ${DEVICE}"
         return 1
     elif [[ ! -d /sys/class/infiniband/${DEVICE}/ports/${PORT} ]]; then
-        die 1 "RDMA device ${DEVICE} has no port ${PORT}"
+        die 1 "${FUNCNAME}:  RDMA device ${DEVICE} has no port ${PORT}"
         return 1
     fi
 
@@ -33,7 +33,7 @@ function check_rdma_hw() {
     read -a STATE < /sys/class/infiniband/${DEVICE}/ports/${PORT}/state
 
     if [[ ${PHYS_STATE[1]} != "LinkUp" || ${STATE[1]} != "ACTIVE" ]]; then
-        die 1 "Port ${PORT} on ${DEVICE} down."
+        die 1 "${FUNCNAME}:  Port ${PORT} on ${DEVICE} down."
         return 1
     fi
 
@@ -41,7 +41,7 @@ function check_rdma_hw() {
     if [[ -n $2 ]]; then
         read -a DEV_RATE < /sys/class/infiniband/${DEVICE}/ports/${PORT}/rate
         if [[ ${DEV_RATE[0]} != "$2" ]]; then
-            die 1 "$1 rate not $2"
+            die 1 "${FUNCNAME}:  $1 rate not $2"
             return 1
         fi
     fi
@@ -50,7 +50,7 @@ function check_rdma_hw() {
     if [[ -n $3 ]]; then
         read DEV_MTU < /sys/class/infiniband/${DEVICE}/device/net/*/mtu
         if [[ "$DEV_MTU" != "$3" ]]; then
-            die 1 "$1 mtu not $3"
+            die 1 "${FUNCNAME}:  $1 mtu not $3"
             return 1
         fi
     fi
@@ -59,7 +59,7 @@ function check_rdma_hw() {
     if [[ -n $4 ]]; then
         read DEV_FW < /sys/class/infiniband/${DEVICE}/fw_ver
         if [[ "$DEV_FW" != "$4" ]]; then
-            die 1 "$1 firmware invalid"
+            die 1 "${FUNCNAME}:  $1 firmware invalid"
             return 1
         fi
     fi
